@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'channels',
     'chat',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -92,24 +93,39 @@ DATABASES = {
 REDIS_HOST = os.getenv('REDIS_HOST'),
 REDIS_PORT = int(os.getenv('REDIS_PORT'))
 
-# CHANNEL_LAYERS = {
-#     "default":{
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {'hosts': [(REDIS_HOST, REDIS_PORT)]}
-#     }
-# }
-
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)], 
-        },
+    "default":{
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(REDIS_HOST, REDIS_PORT)]},
     },
 }
 
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)], 
+#         },
+#     },
+# }
 
-REST_FRAMEWORK = {}
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'Title': 'Messaging API Documentation',
+    'Description': 'Real-time messaging and Websocket API',
+    'Version': '1.0.0',  
+    'SERVE_INCLUDE_SCHEMA': False,
+     'COMPONENT_SPLIT_REQUEST': True,
+}
 
 JWT_SECRET = os.getenv('JWT_SECRET',"fallback-secret"),
 JWT_ALGORITHM = os.getenv('JWT_ALGORITHM',"HS256"),
