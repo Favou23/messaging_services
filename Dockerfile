@@ -48,4 +48,10 @@ COPY . .
 EXPOSE 8000
 
 # Run the application.
-CMD daphne -p 8000 chat_api.asgi:application
+# CMD daphne -p 8000 chat_api.asgi:application
+# CMD daphne -b 0.0.0.0 -p 8000 chat_api.asgi:application
+
+CMD python manage.py migrate && \
+    daphne -b 0.0.0.0 -p 8000 chat_api.asgi:application
+
+

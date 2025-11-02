@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+# load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,7 +28,11 @@ SECRET_KEY=os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*", "chat.localhost", "auth.localhost", "localhost", "messaging_services"]
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 
 # Application definition
@@ -120,18 +124,18 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'Title': 'Messaging API Documentation',
-    'Description': 'Real-time messaging and Websocket API',
-    'Version': '1.0.0',  
+    'TITLE': 'Messaging API Documentation',
+    'DESCRIPTION': 'Real-time messaging and Websocket API',
+    'VERSION': '1.0.0',  
     'SERVE_INCLUDE_SCHEMA': False,
      'COMPONENT_SPLIT_REQUEST': True,
 }
 
-JWT_SECRET = os.getenv('JWT_SECRET',"fallback-secret"),
-JWT_ALGORITHM = os.getenv('JWT_ALGORITHM',"HS256"),
+JWT_SECRET = os.getenv('JWT_SECRET',"fallback-secret")
+JWT_ALGORITHM = os.getenv('JWT_ALGORITHM',"HS256")
 
 AUTH_API_URL = os.getenv("AUTH_API_URL")
-AUTH_PROFILE_ENDPOINT = os.getenv("AUTH_PROFILE_ENDPOINT", "users/profile/")
+AUTH_PROFILE_ENDPOINT = os.getenv("AUTH_PROFILE_ENDPOINT" "users/profile/")
 
 
 # Password validation

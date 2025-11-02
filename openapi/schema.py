@@ -4,6 +4,6 @@ from django.urls import path
 
 urlpatterns = [
     path("schema/", SpectacularAPIView.as_view(), name='schema'),
-    path("swagger/", SpectacularSwaggerView.as_view(), name= "swagger"),
-    path("redoc/", SpectacularRedocView.as_view(), name= "redoc"),
+    path("swagger/", SpectacularSwaggerView.as_view(url_name = 'schema'), name= "swagger"),
+    path("redoc/", SpectacularRedocView.as_view(url_name = 'schema'), name= "redoc"),
 ]
