@@ -1,11 +1,11 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.conf import settings
 from .models import ChatRoom, Message
 from .auth_client import fetch_profile_async
 
-class ChatConsumer(AsyncWebsocketConsumer):
+class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group = f"chat_{self.room_id}"
@@ -114,7 +114,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room = ChatRoom.objects.get(id=room_id)
         return Message.objects.create(room=room, sender_id=sender_id, content=content)
 
-class PresenceConsumer(AsyncWebsocketConsumer):
+class PresenceConsumer(AsyncJsonWebsocketConsumer):
     """
     Optional consumer clients can subscribe to global presence channel.
     Send/receive presence updates here.
