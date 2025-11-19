@@ -25,14 +25,14 @@ def get_auth_url():
     """Get the auth service URL from settings"""
     url = getattr(settings, "AUTH_API_URL", "http://authservice:8080")
     if DEBUG_MODE:
-        print(f"📍 AUTH_API_URL from settings: {url}")
+        print(f"AUTH_API_URL from settings: {url}")
     return url
 
 def get_profile_endpoint():
     """Get the profile endpoint from settings"""
     endpoint = getattr(settings, "AUTH_PROFILE_ENDPOINT", "api/users/profile/")
     if DEBUG_MODE:
-        print(f"📍 AUTH_PROFILE_ENDPOINT from settings: {endpoint}")
+        print(f"AUTH_PROFILE_ENDPOINT from settings: {endpoint}")
     return endpoint
 
 
@@ -60,7 +60,7 @@ def fetch_profile_sync(token):
     
     if DEBUG_MODE:
         print("=" * 70)
-        print("🔍 FETCHING USER PROFILE")
+        print("FETCHING USER PROFILE")
         print(f"   URL: {url}")
         print(f"   Token: {token[:50]}...{token[-10:]}")
         print("=" * 70)
@@ -69,9 +69,9 @@ def fetch_profile_sync(token):
         response = httpx.get(url, headers=headers, timeout=10.0)
         
         if DEBUG_MODE:
-            print(f"📥 Response Status: {response.status_code}")
-            print(f"📥 Response Headers: {dict(response.headers)}")
-            print(f"📥 Response Body: {response.text[:500]}")
+            print(f"Response Status: {response.status_code}")
+            print(f"Response Headers: {dict(response.headers)}")
+            print(f"Response Body: {response.text[:500]}")
             print("=" * 70)
         
         if response.status_code == 200:
@@ -80,51 +80,51 @@ def fetch_profile_sync(token):
                 logger.info(f"✓ Successfully fetched profile for user ID: {profile.get('id')}")
                 
                 if DEBUG_MODE:
-                    print(f"✅ Profile fetched successfully: {profile}")
+                    print(f"Profile fetched successfully: {profile}")
                 
                 return profile
                 
             except ValueError as e:
                 logger.error(f"Failed to parse JSON response: {e}")
                 if DEBUG_MODE:
-                    print(f"❌ JSON parse error: {e}")
+                    print(f"JSON parse error: {e}")
                 return None
         
         elif response.status_code == 401:
             logger.warning(f"Authentication failed: {response.text[:200]}")
             if DEBUG_MODE:
-                print(f"❌ 401 Unauthorized: {response.text[:200]}")
+                print(f"401 Unauthorized: {response.text[:200]}")
             return None
             
         elif response.status_code == 404:
             logger.warning(f"Profile endpoint not found: {url}")
             if DEBUG_MODE:
-                print(f"❌ 404 Not Found: {url}")
+                print(f"404 Not Found: {url}")
             return None
             
         else:
             logger.error(f"Auth service returned status {response.status_code}: {response.text[:200]}")
             if DEBUG_MODE:
-                print(f"❌ Unexpected status {response.status_code}: {response.text[:200]}")
+                print(f"Unexpected status {response.status_code}: {response.text[:200]}")
             return None
             
     except httpx.ConnectError as e:
         logger.error(f"Cannot connect to auth service at {url}: {str(e)}")
         if DEBUG_MODE:
-            print(f"❌ CONNECTION ERROR: Cannot reach {url}")
+            print(f" CONNECTION ERROR: Cannot reach {url}")
             print(f"   Error: {str(e)}")
         return None
         
     except httpx.TimeoutException:
         logger.error(f"Auth service request timed out: {url}")
         if DEBUG_MODE:
-            print(f"❌ TIMEOUT: Request to {url} took too long")
+            print(f"TIMEOUT: Request to {url} took too long")
         return None
         
     except Exception as e:
         logger.error(f"Unexpected error fetching profile: {type(e).__name__}: {str(e)}")
         if DEBUG_MODE:
-            print(f"❌ UNEXPECTED ERROR: {type(e).__name__}")
+            print(f"UNEXPECTED ERROR: {type(e).__name__}")
             print(f"   Message: {str(e)}")
             import traceback
             traceback.print_exc()
@@ -160,51 +160,41 @@ def verify_user_exists(user_id, token):
             print(f"   Status: {response.status_code}")
         
         if response.status_code == 200:
-            logger.debug(f"✓ User {user_id} exists")
+            logger.debug(f"User {user_id} exists")
             if DEBUG_MODE:
-                print(f"   ✅ User {user_id} verified")
+                print(f"   User {user_id} verified")
             return True
         elif response.status_code == 404:
             logger.warning(f"User {user_id} not found in auth service")
             if DEBUG_MODE:
-                print(f"   ❌ User {user_id} not found (404)")
+                print(f"   User {user_id} not found (404)")
             return False
         elif response.status_code == 401:
             logger.warning(f"Unauthorized when verifying user {user_id}")
             if DEBUG_MODE:
-                print(f"   ❌ Unauthorized (401)")
+                print(f"    Unauthorized (401)")
             return False
         else:
             logger.error(f"Auth service returned {response.status_code} for user {user_id}")
             if DEBUG_MODE:
-                print(f"   ❌ Unexpected status: {response.status_code}")
+                print(f"    Unexpected status: {response.status_code}")
             return False
             
     except httpx.ConnectError as e:
         logger.error(f"Cannot connect to auth service: {str(e)}")
         if DEBUG_MODE:
-            print(f"   ❌ Connection error: {str(e)}")
+            print(f"    Connection error: {str(e)}")
         return False
         
     except Exception as e:
         logger.error(f"Error verifying user {user_id}: {type(e).__name__}: {str(e)}")
         if DEBUG_MODE:
-            print(f"   ❌ Error: {type(e).__name__}: {str(e)}")
+            print(f"    Error: {type(e).__name__}: {str(e)}")
         return False
 
 
 async def fetch_profile_async(token):
-    """
-    Fetch user profile from auth service asynchronously.
-    Used by WebSocket consumers.
-    
-    Args:
-        token: JWT access token
-        
-    Returns:
-        dict: User profile data
-        None: If authentication fails
-    """
+   
     if not token:
         logger.error("No token provided to fetch_profile_async")
         return None
@@ -235,5 +225,5 @@ async def fetch_profile_async(token):
         except Exception as e:
             logger.error(f"[ASYNC] Error fetching profile: {str(e)}")
             if DEBUG_MODE:
-                print(f"❌ [ASYNC] Error: {str(e)}")
+                print(f" [ASYNC] Error: {str(e)}")
             return None

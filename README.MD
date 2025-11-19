@@ -9,7 +9,7 @@ Features:
 - Redis channel layer & PostgreSQL persistence
 - Docker + docker-compose example
 
-## Quickstart (dev)
+## Quickstart 
 
 1. Copy `.env.example` to `.env` and fill values (point `AUTH_API_URL` and `JWT_SECRET` to your Auth service).
 2. Build & start:

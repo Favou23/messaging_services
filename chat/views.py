@@ -27,14 +27,14 @@ class CreateOrGetRoom(APIView):
         participant_b = serializer.validated_data['participant_b']
         
         # just added this line 
-        print(f"✅ Participants validated: {participant_a}, {participant_b}")
+        print(f" Participants validated: {participant_a}, {participant_b}")
         # Get token from Authorization header
         auth_header = request.headers.get('Authorization', '')
         token = auth_header.replace('Bearer ', '').strip() if auth_header.startswith('Bearer ') else None
         
         if not token:
             # just added this too
-            print("❌ No token")
+            print(" No token")
             return Response(
                 {"detail": "Authentication required. Please provide a Bearer token."}, 
                 status=status.HTTP_401_UNAUTHORIZED
@@ -76,12 +76,12 @@ class CreateOrGetRoom(APIView):
         users_valid = self.verify_users_exist([participant_a, participant_b], token)
         
         if not users_valid:
-            print("❌ verify_users_exist returned False")
+            print("verify_users_exist returned False")
             return Response(
                 {"detail": "One or more participants not found in auth service"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
-        print(f"✅ Users verified")
+        print(f"Users verified")
         # Normalize participant order (prevent duplicate rooms)
         if participant_a > participant_b:
             participant_a, participant_b = participant_b, participant_a
@@ -141,101 +141,3 @@ class RoomMessages (APIView):
         qs = room.messages.all()
         serializer = MessageSerializer(qs, many=True)
         return Response(serializer.data)
-
-
-# # messaging_services/chat/views.py
-
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-# from rest_framework import status, serializers
-# from django.shortcuts import get_object_or_404
-# import logging
-
-# from .models import ChatRoom, Message
-# from .serializers import MessageSerializer
-
-# logger = logging.getLogger(__name__)
-
-
-# class CreateRoomSerializer(serializers.Serializer):
-#     participant_a = serializers.CharField(max_length=255, required=True)
-#     participant_b = serializers.CharField(max_length=255, required=True)
-
-
-# class CreateOrGetRoom(APIView):
-#     """
-#     Create or get a chat room between two participants.
-    
-#     TEMPORARY: Auth validation disabled for testing.
-#     """
-#     serializer_class = CreateRoomSerializer
-    
-#     def post(self, request):
-#         print("\n" + "="*70)
-#         print("🚀 CREATE ROOM REQUEST")
-#         print("="*70)
-        
-#         # Validate input
-#         serializer = CreateRoomSerializer(data=request.data)
-#         if not serializer.is_valid():
-#             print(f"❌ Validation failed: {serializer.errors}")
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-#         participant_a = serializer.validated_data['participant_a']
-#         participant_b = serializer.validated_data['participant_b']
-#         print(f"✅ Participants: {participant_a} and {participant_b}")
-        
-#         # TODO: Add auth validation later
-#         # For now, just create the room
-#         print("⚠️  Auth validation SKIPPED (temporary)")
-        
-#         # Normalize participant order (prevent duplicates)
-#         if participant_a > participant_b:
-#             participant_a, participant_b = participant_b, participant_a
-#             print(f"🔄 Normalized order: {participant_a}, {participant_b}")
-        
-#         # Create or get room
-#         try:
-#             room, created = ChatRoom.objects.get_or_create(
-#                 participant_a=participant_a,
-#                 participant_b=participant_b
-#             )
-            
-#             print(f"{'✅ Room CREATED' if created else '✅ Room FOUND'}: ID={room.id}")
-#             print("="*70 + "\n")
-            
-#             return Response({
-#                 "success": True,
-#                 "room_id": room.id,
-#                 "created": created,
-#                 "participant_a": participant_a,
-#                 "participant_b": participant_b,
-#                 "created_at": room.created_at,
-#                 "message": "Room created successfully" if created else "Room already exists"
-#             }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
-            
-#         except Exception as e:
-#             print(f"❌ Database error: {e}")
-#             print("="*70 + "\n")
-#             logger.error(f"Error creating room: {str(e)}")
-#             import traceback
-#             traceback.print_exc()
-            
-#             return Response({
-#                 "success": False,
-#                 "detail": f"Database error: {str(e)}"
-#             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# class RoomMessages(APIView):
-#     """Get all messages in a room"""
-    
-#     def get(self, request, room_id):
-#         print(f"\n📨 Fetching messages for room {room_id}")
-        
-#         room = get_object_or_404(ChatRoom, id=room_id)
-#         messages = room.messages.all()
-#         serializer = MessageSerializer(messages, many=True)
-        
-#         print(f"✅ Found {messages.count()} messages\n")
-#         return Response(serializer.data)

@@ -33,7 +33,7 @@ class JwtAuthMiddleware(BaseMiddleware):
         if token:
             payload = await _decode_token(token)
             if payload:
-                # store minimal user info (adjust keys to your Auth JWT)
+              
                 scope["auth_user"] = {
                     "user_id": str(payload.get("user_id") or payload.get("sub")),
                     "username": payload.get("username") or payload.get("email") or "",
